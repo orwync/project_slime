@@ -1,14 +1,16 @@
-//! Shows how to render simple primitive shapes with a single color.
-
+use crate::bullet::*;
+use crate::player::*;
+use crate::sprites::*;
 use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-use level_1::Level1Plugin;
-use crate::player::*;
 use bevy_xpbd_2d::prelude::*;
+use level_1::Level1Plugin;
 
-mod player;
-mod level_1;
+mod bullet;
 mod collision;
+mod level_1;
+mod player;
+mod sprites;
 
 fn main() {
     App::new()
@@ -17,6 +19,7 @@ fn main() {
         .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(PlayerPlugin)
         .add_plugins(Level1Plugin)
+        .add_plugins(BulletPlugin)
         .insert_resource(Gravity(Vec2::NEG_Y * 100.0))
         .insert_resource(PhysicsDebugConfig {
             aabb_color: Some(Color::WHITE),
