@@ -1,0 +1,38 @@
+
+use bevy::prelude::*;
+
+pub struct Level1Plugin;
+
+
+impl Plugin for Level1Plugin{
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, add_base);
+    }
+}
+
+pub struct Pos(i32, i32);
+pub struct Size(f32, f32);
+
+#[derive(Component)]
+pub struct Base{
+    pub dimen :Size,
+    pub pos: Pos 
+}
+
+pub fn add_base(mut commands :Commands) {
+    let base :Base = {
+        dimen: (10, 200),
+        pos: (0,0)
+    }
+    commands.spawn((
+        SpriteBundle {
+            sprite: Sprite {
+                custom_size: Some(Vec2::new(base.dimen)),
+                ..default()
+            },
+            ..default()
+        },
+        base,
+    ));
+}
+
