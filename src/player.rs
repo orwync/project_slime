@@ -1,12 +1,14 @@
 use bevy::prelude::*;
 use bevy_xpbd_2d::prelude::*;
 
+use crate::bullet::*;
+use crate::movement::MovingObjectBundle;
 use crate::sprites::*;
 
 pub struct PlayerPlugin;
 const PLAYER_POSITION: (f32, f32, f32) = (0.0, 100.0, 0.0);
 const PLAYER_SIZE: f32 = 50.;
-const BOUNDS: Vec2 = Vec2::new(1200.0, 640.0);
+pub const BOUNDS: Vec2 = Vec2::new(1200.0, 640.0);
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
@@ -27,10 +29,11 @@ pub fn character_movement(
     mut player: Query<(&mut Transform, &Player), With<RigidBody>>,
     input: Res<Input<KeyCode>>,
     time: Res<Time>,
+    mut commands: Commands,
 ) {
     for (mut transform, player) in &mut player {
         let mut rotation_factor = 0.0;
-        let mut movement_factor = 0.0;
+        let mut movement_factor = Vec2::new(0., 0.);
         let mut side_movement_factor = 0.0;
         let mut movement_direction = Vec3::ZERO;
         let mut movement_distance = 0.0;
@@ -44,27 +47,54 @@ pub fn character_movement(
         }
 
         if input.pressed(KeyCode::Up) {
-            movement_factor += 1.0;
-
-            // get the player's forward vector by applying the current rotation to the ships initial facing
-            // vector
-            movement_distance = movement_factor * player.movement_speed * time.delta_seconds();
+            movement_factor.y += 1.0;
+            movement_distance = movement_factor.y * player.movement_speed * time.delta_seconds();
+            movement_direction = transform.rotation * Vec3::Y;
+        } else if input.pressed(KeyCode::Down) {
+            movement_factor.y -= 1.0;
+            movement_distance = movement_factor.y * player.movement_speed * time.delta_seconds();
             movement_direction = transform.rotation * Vec3::Y;
         }
         if input.pressed(KeyCode::Left) {
-            side_movement_factor += -1.0;
-
-            // get the player's forward vector by applying the current rotation to the ships initial facing
-            // vector
+            movement_factor.x += -1.0;
+            movement_distance = movement_factor.x * player.movement_speed * time.delta_seconds();
+            movement_direction = transform.rotation * Vec3::X;
+        } else if input.pressed(KeyCode::Right) {
+            side_movement_factor += 1.0;
             movement_distance = side_movement_factor * player.movement_speed * time.delta_seconds();
             movement_direction = transform.rotation * Vec3::X;
         }
-        if input.pressed(KeyCode::Right) {
-            side_movement_factor += 1.0;
-            // get the player's forward vector by applying the current rotation to the ships initial facing
-            // vector
-            movement_distance = side_movement_factor * player.movement_speed * time.delta_seconds();
-            movement_direction = transform.rotation * Vec3::X;
+        if input.pressed(KeyCode::S) {
+            let square_sprite = square_sprite(Color::BLUE, BULLET_SIZE);
+            let mut transform = transform.clone();
+            transform.rotate_z(player.rotation_speed);
+
+            movement_direction = transform.rotation * Vec3::Y;
+            println!("Logging: {:?}{:?}", transform.rotation, transform.forward());
+
+            commands.spawn((
+                SpriteBundle {
+                    sprite: square_sprite.clone(),
+                    transform: Transform {
+                        translation: transform.translation,
+                        rotation: transform.rotation,
+                        ..default()
+                    },
+                    ..default()
+                },
+                RigidBody::Kinematic,
+                Collider::cuboid(BULLET_SIZE, BULLET_SIZE),
+                Name::new("bullet"),
+                Rotation::default(),
+                Bullet {
+                    life_time: BULLET_LIFETIME,
+                    direction: Vec2 {
+                        x: movement_direction.x,
+                        y: movement_direction.y,
+                    },
+                    movement_speed: 100.0,
+                },
+            ));
         }
         transform.rotate_z(rotation_factor * player.rotation_speed * time.delta_seconds());
         // create the change in translation using the new movement direction and distance
@@ -79,7 +109,7 @@ pub fn character_movement(
 }
 
 pub fn add_player(mut commands: Commands) {
-    let square_sprite = square_sprite(Color::WHITE);
+    let square_sprite = square_sprite(Color::WHITE, PLAYER_SIZE);
     let (x, y, z) = PLAYER_POSITION;
 
     commands.spawn((
@@ -96,5 +126,6 @@ pub fn add_player(mut commands: Commands) {
         },
         Name::new("Player"),
         Rotation::default(),
+        Sensor,
     ));
 }

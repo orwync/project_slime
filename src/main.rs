@@ -1,14 +1,13 @@
 use crate::bullet::*;
 use crate::player::*;
-use crate::sprites::*;
 use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_xpbd_2d::prelude::*;
 use level_1::Level1Plugin;
 
 mod bullet;
-mod collision;
 mod level_1;
+mod movement;
 mod player;
 mod sprites;
 

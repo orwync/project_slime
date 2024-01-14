@@ -15,13 +15,10 @@ pub struct Size(i32, i32);
 pub struct Pos(f32, f32);
 
 #[derive(Component)]
-pub struct Base {
-    pub dimen: Size,
-    pub pos: Pos,
-}
+pub struct Base;
 
 pub fn add_base(mut commands: Commands) {
-    let square_sprite = square_sprite(Color::RED);
+    let square_sprite = square_sprite(Color::RED, 50.);
 
     commands.spawn((
         SpriteBundle {
@@ -32,6 +29,7 @@ pub fn add_base(mut commands: Commands) {
         RigidBody::Static,
         Collider::cuboid(50.0, 50.0),
         Name::new("base2"),
+        Base,
     ));
     commands.spawn((
         SpriteBundle {
@@ -43,6 +41,7 @@ pub fn add_base(mut commands: Commands) {
         RigidBody::Static,
         Collider::cuboid(50.0, 50.0),
         Name::new("base"),
+        Base,
     ));
     commands.spawn((
         SpriteBundle {
@@ -54,6 +53,7 @@ pub fn add_base(mut commands: Commands) {
         RigidBody::Static,
         Collider::cuboid(50.0, 50.0),
         Name::new("wall_1"),
+        Base,
     ));
     commands.spawn((
         SpriteBundle {
@@ -65,5 +65,6 @@ pub fn add_base(mut commands: Commands) {
         RigidBody::Static,
         Collider::cuboid(50.0, 50.0),
         Name::new("wall_2"),
+        Base,
     ));
 }
