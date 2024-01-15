@@ -6,6 +6,7 @@ use bevy_xpbd_2d::prelude::*;
 use level_1::Level1Plugin;
 
 mod bullet;
+mod camera;
 mod level_1;
 mod movement;
 mod player;

@@ -5,6 +5,17 @@ pub struct Velocity {
     pub value: Vec3,
 }
 
+#[derive(Component, Debug)]
+pub struct Direction {
+    pub value: Vec3,
+}
+
+impl Direction {
+    pub fn new(value: Vec3) -> Self {
+        Self { value }
+    }
+}
+
 impl Velocity {
     pub fn new(value: Vec3) -> Self {
         Self { value }
@@ -26,6 +37,7 @@ impl Acceleration {
 pub struct MovingObjectBundle {
     pub velocity: Velocity,
     pub acceleration: Acceleration,
+    pub direction: Direction,
 }
 
 pub struct MovementPlugin;

@@ -7,17 +7,13 @@ pub struct Level1Plugin;
 
 impl Plugin for Level1Plugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, add_base);
+        app.add_systems(Startup, generate_room);
     }
 }
 
-pub struct Size(i32, i32);
-pub struct Pos(f32, f32);
-
 #[derive(Component)]
 pub struct Base;
-
-pub fn add_base(mut commands: Commands) {
+pub fn generate_room(mut commands: Commands) {
     let square_sprite = square_sprite(Color::RED, 50.);
 
     commands.spawn((
